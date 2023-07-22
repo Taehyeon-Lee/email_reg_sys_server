@@ -26,10 +26,11 @@ app.post('/emails', async (req, res) =>{
     res.status(201).send(newUser);
 });
 
-// app.delete('/emails/:id', async (req, res) =>{
-//    await deleteUser(req.params.id);
-//    res.status(204);
-// });
+app.delete('/emails/:id', async (req, res) =>{
+    const id = req.params.id;
+    await deleteUser(id);
+    res.status(204).send();
+});
 
 
 

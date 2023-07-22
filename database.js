@@ -44,6 +44,11 @@ export async function deleteUser(id){
     DELETE FROM users
     WHERE id = ?
     `, [id]);
+    return id;
 }
+
+// const id = await deleteUser(5);
+// const nouser = await getUser(id);
+// console.log(nouser);
 
 
