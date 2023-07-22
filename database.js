@@ -31,13 +31,19 @@ export async function getUser(id) {
 }
 
 export async function createUser(firstName, lastName, email) {
-    // console.log(firstName, lastName, email);
     const [result] = await pool.query(`
     INSERT INTO users (first_name, last_name, email_address)
     VALUES (?, ?, ?)
     `, [firstName, lastName, email]);
     const id = result.insertId;
     return getUser(id);
+}
+
+export async function deleteUser(id){
+    await pool.query(`
+    DELETE FROM users
+    WHERE id = ?
+    `, [id]);
 }
 
 

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import {getUsers, getUser, createUser} from "./database.js";
+import {getUsers, getUser, createUser, deleteUser} from "./database.js";
 
 
 const app = express();
@@ -21,10 +21,16 @@ app.get('/emails/:id', async (req, res) => {
 });
 
 app.post('/emails', async (req, res) =>{
-    const {firstName, lastName, email} = req.body;
-    const newUser = await createUser(firstName, lastName, email);
+    const {first_name, last_name, email_address} = req.body;
+    const newUser = await createUser(first_name, last_name, email_address);
     res.status(201).send(newUser);
 });
+
+// app.delete('/emails/:id', async (req, res) =>{
+//    await deleteUser(req.params.id);
+//    res.status(204);
+// });
+
 
 
 // Error handling middleware sends a status code of 500 and console logs the error stack
