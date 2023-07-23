@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
+import emailValidator from 'email-validator';
 import {getUsers, getUser, createUser, deleteUser} from "./database.js";
 
 /**
@@ -61,19 +62,23 @@ app.post('/emails', async (req, res) => {
         text: `Dear ${first_name} ${last_name}, thank you for registering. Your email (${email_address}) has been registered.`,
     };
 
-    // send confirmation email
-    try { // try catch block to catch any errors that might occur while sending the email
-        await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully");
+    // validate the email address
+    if (emailValidator.validate(email_address)) {
+        // send confirmation email
+        try { // try catch block to catch any errors that might occur while sending the email
+            await transporter.sendMail(mailOptions);
+            console.log("Email sent successfully");
 
-        // After successfully sending the email, create the user in the database
-        const newUser = await createUser(first_name, last_name, email_address);
-        res.status(201).send(newUser);
-    } catch (e) {
-        console.error(e.stack);
-        res.status(500).json({message: "Error occur while sending email"});
+            // After successfully sending the email, create the user in the database
+            const newUser = await createUser(first_name, last_name, email_address);
+            res.status(201).send(newUser);
+        } catch (e) {
+            console.error(e.stack);
+            res.status(500).json({message: "Error occur while sending email"});
+        }
+    } else {
+        res.status(400).json({message: "Error occur while sending email"});
     }
-
 });
 
 
