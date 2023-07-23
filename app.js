@@ -3,6 +3,10 @@ import cors from 'cors';
 import nodemailer from 'nodemailer';
 import {getUsers, getUser, createUser, deleteUser} from "./database.js";
 
+/**
+ * This is the server file that runs the server and handles the requests
+ * using express framework
+ */
 
 const app = express();
 app.use(cors());
@@ -18,13 +22,17 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
+/*
+* Rest API get request to get all the users from the database
+* */
 app.get('/emails', async (req, res) => {
     const users = await getUsers();
     res.send(users);
 });
 
-
+/*
+* Rest API get request to get a user by user id from the database with error handling
+* */
 app.get('/emails/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -36,7 +44,9 @@ app.get('/emails/:id', async (req, res) => {
     }
 });
 
-
+/*
+* Rest API post request to create a user in the database and send a confirmation email
+ */
 app.post('/emails', async (req, res) => {
     // get the user details from the request body(from the client input boxes)
     const {first_name, last_name, email_address} = req.body;
@@ -50,7 +60,7 @@ app.post('/emails', async (req, res) => {
     };
 
     // send confirmation email
-    try {
+    try { // try catch block to catch any errors that might occur while sending the email
         await transporter.sendMail(mailOptions);
         console.log("Email sent successfully");
 
@@ -64,6 +74,9 @@ app.post('/emails', async (req, res) => {
 
 });
 
+/*
+* Rest API delete request to delete a user from the database
+ */
 app.delete('/emails/:id', async (req, res) => {
     const id = req.params.id;
     await deleteUser(id);
