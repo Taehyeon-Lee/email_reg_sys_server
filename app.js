@@ -12,7 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // for read and parse json in req.body
 
-
 // transporter object to send email
 const transporter = nodemailer.createTransport({
     service: "hotmail",
@@ -22,6 +21,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+
 /*
 * Rest API get request to get all the users from the database
 * */
@@ -29,6 +29,7 @@ app.get('/emails', async (req, res) => {
     const users = await getUsers();
     res.send(users);
 });
+
 
 /*
 * Rest API get request to get a user by user id from the database with error handling
@@ -43,6 +44,7 @@ app.get('/emails/:id', async (req, res) => {
         res.status(500).json({message: "Error occur while sending email"});
     }
 });
+
 
 /*
 * Rest API post request to create a user in the database and send a confirmation email
@@ -73,6 +75,7 @@ app.post('/emails', async (req, res) => {
     }
 
 });
+
 
 /*
 * Rest API delete request to delete a user from the database
