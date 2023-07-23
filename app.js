@@ -8,6 +8,17 @@ app.use(cors());
 app.use(express.json());// for read and parse json in req.body
 
 
+// transporter object to send email
+// TODO: insert real email addrrss and password
+const transporter = nodemailer.createTransport({
+    service: "hotmail",
+    auth: {
+        user: "",
+        pass: ""
+    }
+});
+
+
 app.get('/emails', async (req, res) => {
     const users = await getUsers();
     res.send(users);
@@ -20,18 +31,38 @@ app.get('/emails/:id', async (req, res) => {
     res.send(user);
 });
 
-app.post('/emails', async (req, res) =>{
+// TODO: insert real email address
+app.post('/emails', async (req, res) => {
     const {first_name, last_name, email_address} = req.body;
-    const newUser = await createUser(first_name, last_name, email_address);
-    res.status(201).send(newUser);
+
+    // confirmation email details
+    const mailOptions = {
+        from: "my email address",
+        to: "user's email address",
+        subject: 'Email Confirmation',
+        text: `Dear ${first_name} ${last_name}, thank you for registering. Your email (${email_address}) has been registered.`,
+    };
+
+    // send confirmation email
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully");
+
+        // After successfully sending the email, create the user in the database
+        const newUser = await createUser(first_name, last_name, email_address);
+        res.status(201).send(newUser);
+    } catch (e) {
+        console.error(e.stack);
+        res.status(500).json({message: "Error occur while sending email"});
+    }
+
 });
 
-app.delete('/emails/:id', async (req, res) =>{
+app.delete('/emails/:id', async (req, res) => {
     const id = req.params.id;
     await deleteUser(id);
-    res.status(204).send();
+    res.status(204).json();
 });
-
 
 
 // Error handling middleware sends a status code of 500 and console logs the error stack
