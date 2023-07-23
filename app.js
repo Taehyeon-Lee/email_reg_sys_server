@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import nodemailer from 'nodemailer';
 import {getUsers, getUser, createUser, deleteUser} from "./database.js";
 
 
@@ -9,12 +10,11 @@ app.use(express.json());// for read and parse json in req.body
 
 
 // transporter object to send email
-// TODO: insert real email addrrss and password
 const transporter = nodemailer.createTransport({
     service: "hotmail",
     auth: {
-        user: "",
-        pass: ""
+        user: "required-address-test@outlook.com",
+        pass: "testpassword486"
     }
 });
 
@@ -31,17 +31,39 @@ app.get('/emails/:id', async (req, res) => {
     res.send(user);
 });
 
-// TODO: insert real email address
+
 app.post('/emails', async (req, res) => {
     const {first_name, last_name, email_address} = req.body;
+    // console.log(req.body);
+    // console.log(first_name, last_name, email_address)
+
 
     // confirmation email details
     const mailOptions = {
-        from: "my email address",
-        to: "user's email address",
+        from: "required-address-test@outlook.com",
+        to: `${email_address}`,
         subject: 'Email Confirmation',
         text: `Dear ${first_name} ${last_name}, thank you for registering. Your email (${email_address}) has been registered.`,
     };
+    // console.log(mailOptions.to);
+    // console.log(mailOptions.text);
+
+
+    // transporter.sendMail(mailOptions, async (error, info) => {
+    //     if (error) {
+    //         console.error(error.stack);
+    //         res.status(500).json({message: "Error occur while sending email"});
+    //     } else {
+    //         console.log("Email sent successfully");
+    //         const newUser = await createUser(first_name, last_name, email_address);
+    //         res.status(201).send(newUser);
+    //     }
+    // });
+
+
+
+
+
 
     // send confirmation email
     try {
