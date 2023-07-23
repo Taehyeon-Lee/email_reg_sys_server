@@ -6,7 +6,7 @@ import {getUsers, getUser, createUser, deleteUser} from "./database.js";
 
 const app = express();
 app.use(cors());
-app.use(express.json());// for read and parse json in req.body
+app.use(express.json()); // for read and parse json in req.body
 
 
 // transporter object to send email
@@ -24,19 +24,22 @@ app.get('/emails', async (req, res) => {
     res.send(users);
 });
 
-// TODO: error handling when the user is not found
+
 app.get('/emails/:id', async (req, res) => {
-    const id = req.params.id;
-    const user = await getUser(id);
-    res.send(user);
+    try {
+        const id = req.params.id;
+        const user = await getUser(id);
+        res.send(user);
+    } catch (e) {
+        console.error(e.stack);
+        res.status(500).json({message: "Error occur while sending email"});
+    }
 });
 
 
 app.post('/emails', async (req, res) => {
+    // get the user details from the request body(from the client input boxes)
     const {first_name, last_name, email_address} = req.body;
-    // console.log(req.body);
-    // console.log(first_name, last_name, email_address)
-
 
     // confirmation email details
     const mailOptions = {
@@ -45,25 +48,6 @@ app.post('/emails', async (req, res) => {
         subject: 'Email Confirmation',
         text: `Dear ${first_name} ${last_name}, thank you for registering. Your email (${email_address}) has been registered.`,
     };
-    // console.log(mailOptions.to);
-    // console.log(mailOptions.text);
-
-
-    // transporter.sendMail(mailOptions, async (error, info) => {
-    //     if (error) {
-    //         console.error(error.stack);
-    //         res.status(500).json({message: "Error occur while sending email"});
-    //     } else {
-    //         console.log("Email sent successfully");
-    //         const newUser = await createUser(first_name, last_name, email_address);
-    //         res.status(201).send(newUser);
-    //     }
-    // });
-
-
-
-
-
 
     // send confirmation email
     try {
